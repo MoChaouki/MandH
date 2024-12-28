@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center">Résultats de recherche</h2>
+    <p>Résultats pour "{{ query }}" :</p>
+
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
+                <div class="card-body text-center">
+                    <h6 class="card-title">{{ product.name }}</h6>
+                    <p class="card-text">
+                        {% if product.is_sale %}
+                        <strike>${{ product.price }}</strike> ${{ product.sale_price }}
+                        {% else %}
+                        ${{ product.price }}
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'product' product.id %}" class="btn btn-primary btn-sm">Voir Produit</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if products|length == 0 %}
+    <p class="text-center">Aucun produit trouvé pour votre recherche.</p>
+    {% endif %}
+</div>
+{% endblock %}

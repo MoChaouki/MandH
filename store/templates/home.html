@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+
+    
+</head>
+<!-- Header-->
+<header>
+    <div style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); z-index: 100;">
+        <h1 style="
+            color: rgb(255, 255, 255); 
+            display: inline-block; 
+            text-shadow: 
+                -2px -2px 0 #000, 
+                 2px -2px 0 #000, 
+                -2px  2px 0 #000, 
+                 2px  2px 0 #000, 
+                -3px -3px 0 #000, 
+                 3px -3px 0 #000, 
+                -3px  3px 0 #000, 
+                 3px  3px 0 #000;">
+            You Call the gadget. WE GET IT
+        </h1>
+    </div>
+</header>
+
+
+
+
+    <swiper-container class="mySwiper" pagination="true" pagination-clickable="true" navigation="true"
+        space-between="30" centered-slides="true" autoplay-delay="2500" autoplay-disable-on-interaction="false">
+        <swiper-slide><img src="{% static './assets/home1.jpg'%}" /></swiper-slide>
+        <swiper-slide><img src="{% static './assets/home5.jpg'%}" /></swiper-slide>
+        <swiper-slide><img src="{% static './assets/home3.jpg'%}" /></swiper-slide>
+        <swiper-slide><img src="{% static './assets/home4.jpg'%}" /></swiper-slide>
+
+
+    </swiper-container>
+
+</header>
+
+
+
+
+
+
+
+<!-- Section-->
+<section class="py-5">
+
+    <div class="container px-4 px-lg-5 mt-5">
+
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            {% for product in products %}
+            {% if product.is_sale %}
+
+
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <a href="{% url 'product' product.id  %}" style="text-decoration: none;">
+                        <!-- Sale badge-->
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale
+                        </div>
+
+                        <!-- Product image-->
+                        <img class="card-img-top" src="{{ product.image.url }}" alt="..." />
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder">{{ product.name }}</h5>
+                                <!-- Sale -->
+                                <div class="d-flex justify-content-center small text-warning mb-2">
+                                    <div class="bi-star-fill"></div>
+                                    &nbsp;&nbsp;Sale!&nbsp;&nbsp;
+                                    <div class="bi-star-fill"></div>
+                                </div>
+
+                                <!-- Product price-->
+                                <strike>
+                                    ${{ product.price }}
+                                </strike>
+                                &nbsp;
+                                ${{ product.sale_price }}
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <!-- <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id  %}">Add to Cart</a> -->
+                                <button value="{{ product.id }}" class="btn btn-outline-dark mt-auto add-cart-btn">Add To Cart</button>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+            {% else %}
+
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <a href="{% url 'product' product.id %}" style="text-decoration: none;">
+                        <!-- Product image-->
+                        <img class="card-img-top" src="{{ product.image.url }}" alt="..." />
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder">{{ product.name }}</h5>
+                                <!-- Product price-->
+                                ${{ product.price }}
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <!-- <a href="{% url 'product' product.id %}" class="btn btn-outline-dark mt-auto">Add to Cart</a> -->
+                                <button value="{{ product.id }}" class="btn btn-outline-dark mt-auto add-cart-btn">Add To Cart</button>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+            {% endif %}
+            {% endfor %}
+
+
+        </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+
+
+<script> 
+
+    
+    $(document).on('click', '.add-cart-btn', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'cart_add' %}",
+            data: {
+                product_id: $(this).val(),// Get the product ID from the clicked button,
+                product_qty: 1,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById("cart_quantity").textContent = json.qty;
+                location.reload();
+            },
+            error: function (xhr, errmsg, err) {
+                // Handle errors
+            }
+        });
+    });
+
+
+    
+
+</script>
+{% endblock %}
